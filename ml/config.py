@@ -21,7 +21,7 @@ MODEL_SAVE_DIR = Path(os.getenv('MODEL_SAVE_DIR', str(Path(__file__).parent / 's
 
 # ISO 3166-1 alpha-2 country code for public holiday detection.
 # Set to match the country where the pharmacy operates.
-HOLIDAYS_COUNTRY = os.getenv('HOLIDAYS_COUNTRY', 'SI')
+HOLIDAYS_COUNTRY = os.getenv('HOLIDAYS_COUNTRY', 'MK')
 
 # Model configuration
 FORECAST_HORIZON_DAYS = int(os.getenv('FORECAST_HORIZON_DAYS', '30'))
