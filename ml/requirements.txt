@@ -1,0 +1,9 @@
+pandas==2.3.3
+numpy==2.3.5
+scikit-learn==1.7.2
+lightgbm==4.6.0
+SQLAlchemy==2.0.44
+psycopg2-binary==2.9.11
+python-dotenv==1.2.1
+holidays==0.93
+pytest==9.0.2

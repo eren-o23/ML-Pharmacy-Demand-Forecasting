@@ -1,0 +1,56 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Drug {
+  id             Int             @id @default(autoincrement())
+  drugCode       String          @unique @map("drug_code")
+  drugName       String          @map("drug_name")
+  atcCode        String?         @map("atc_code")
+  createdAt      DateTime?       @default(now()) @map("created_at") @db.Timestamptz(6)
+  forecastsDaily ForecastDaily[] @relation("DrugToForecastDaily")
+  salesDaily     SalesDaily[]    @relation("DrugToSalesDaily")
+
+  @@map("drugs")
+  @@index([atcCode], map: "idx_drugs_atc_code")
+  @@index([drugCode], map: "idx_drugs_drug_code")
+}
+
+model ForecastDaily {
+  id              Int       @id @default(autoincrement())
+  drugId          Int       @map("drug_id")
+  forecastDate    DateTime  @map("forecast_date") @db.Date
+  runTimestamp    DateTime  @default(now()) @map("run_timestamp") @db.Timestamptz(6)
+  predictedDemand Decimal   @map("predicted_demand") @db.Decimal(10, 2)
+  lowerCi         Decimal?  @map("lower_ci") @db.Decimal(10, 2)
+  upperCi         Decimal?  @map("upper_ci") @db.Decimal(10, 2)
+  modelName       String    @map("model_name")
+  createdAt       DateTime? @default(now()) @map("created_at") @db.Timestamptz(6)
+  drug            Drug      @relation("DrugToForecastDaily", fields: [drugId], references: [id], onDelete: Cascade, onUpdate: NoAction)
+
+  @@map("forecasts_daily")
+  @@index([drugId, forecastDate], map: "idx_forecasts_daily_drug_date")
+  @@index([drugId], map: "idx_forecasts_daily_drug_id")
+  @@index([forecastDate], map: "idx_forecasts_daily_forecast_date")
+  @@index([runTimestamp], map: "idx_forecasts_daily_run_timestamp")
+}
+
+model SalesDaily {
+  id           Int       @id @default(autoincrement())
+  drugId       Int       @map("drug_id")
+  date         DateTime  @db.Date
+  quantitySold Int       @map("quantity_sold")
+  createdAt    DateTime? @default(now()) @map("created_at") @db.Timestamptz(6)
+  drug         Drug      @relation("DrugToSalesDaily", fields: [drugId], references: [id], onDelete: Cascade, onUpdate: NoAction)
+
+  @@map("sales_daily")
+  @@unique([drugId, date])
+  @@index([date], map: "idx_sales_daily_date")
+  @@index([drugId, date], map: "idx_sales_daily_drug_date")
+  @@index([drugId], map: "idx_sales_daily_drug_id")
+}
